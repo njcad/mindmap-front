@@ -1,9 +1,14 @@
 import { OutlineButton } from "../components/application/OutlineButton";
 import { BlueButton } from "../components/application/BlueButton";
-import { Box, Heading, Input, HStack, Button } from "@chakra-ui/react";
+import { Box, Heading, Input, HStack, Button, Text } from "@chakra-ui/react";
+import { useToast } from "@chakra-ui/toast";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { saveQuestions } from "../services/SessionServices";
+import {
+  saveQuestions,
+  uploadQuestionsFile,
+} from "../services/SessionServices";
+
 interface Question {
   text: string;
 }
@@ -11,6 +16,43 @@ interface Question {
 export const StartSession = () => {
   const navigate = useNavigate();
   const sessionID = "awesome-tiger";
+  const toast = useToast();
+  const [questions, setQuestions] = useState<Question[]>([]);
+  const [newQuestion, setNewQuestion] = useState("");
+  const [editingIndex, setEditingIndex] = useState<number | null>(null);
+  const [editingText, setEditingText] = useState("");
+  const [isUploading, setIsUploading] = useState(false);
+
+  const handleFileUpload = async (
+    event: React.ChangeEvent<HTMLInputElement>
+  ) => {
+    const file = event.target.files?.[0];
+    if (!file) return;
+
+    setIsUploading(true);
+    try {
+      const newQuestions = await uploadQuestionsFile(file);
+      setQuestions([...questions, ...newQuestions]);
+
+      toast({
+        title: "Success",
+        description: `Added ${newQuestions.length} questions`,
+        status: "success",
+        duration: 3000,
+      });
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: error instanceof Error ? error.message : "Upload failed",
+        status: "error",
+        duration: 3000,
+      });
+    } finally {
+      setIsUploading(false);
+      event.target.value = "";
+    }
+  };
+
   const handleLaunch = async () => {
     try {
       console.log(questions);
@@ -23,10 +65,6 @@ export const StartSession = () => {
       console.error("Error launching session:", error);
     }
   };
-  const [questions, setQuestions] = useState<Question[]>([]);
-  const [newQuestion, setNewQuestion] = useState("");
-  const [editingIndex, setEditingIndex] = useState<number | null>(null);
-  const [editingText, setEditingText] = useState("");
 
   const handleAddQuestion = () => {
     if (newQuestion.trim()) {
@@ -72,6 +110,29 @@ export const StartSession = () => {
 
       <Box flex={1} maxH="calc(100vh - 80px)" overflowY="auto" px={2}>
         <Heading color="gray.400">Questions</Heading>
+        <Box mt={4} mb={6}>
+          <input
+            type="file"
+            accept=".txt,.docx,.pdf"
+            onChange={handleFileUpload}
+            style={{ display: "none" }}
+            id="file-upload"
+          />
+          <label htmlFor="file-upload">
+            <Button
+              as="span"
+              variant="outline"
+              mr={3}
+              loading={isUploading}
+              loadingText="Uploading..."
+            >
+              Upload Questions File
+            </Button>
+          </label>
+          <Text fontSize="sm" color="gray.500" mt={1}>
+            Supported formats: .txt, .docx, .pdf
+          </Text>
+        </Box>
 
         <Box>
           {questions.map((question, index) => (
@@ -111,7 +172,6 @@ export const StartSession = () => {
                     >
                       edit
                     </Button>
-                    {/* TODO: add other buttons */}
                   </HStack>
                 </>
               )}

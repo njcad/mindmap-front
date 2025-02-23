@@ -1,7 +1,11 @@
 import { useState, useEffect } from "react";
 import { Box, Heading, VStack, Text } from "@chakra-ui/react";
 import { useParams } from "react-router-dom";
-import { getQuestions } from "../services/SessionServices";
+import {
+  getQuestions,
+  setCurrentQuestion,
+  getSubmissions,
+} from "../services/SessionServices";
 import { BlueButton } from "../components/application/BlueButton";
 import { OutlineButton } from "../components/application/OutlineButton";
 
@@ -11,8 +15,10 @@ interface Question {
 
 export const TeacherSession = () => {
   const { sessionId } = useParams();
+  console.log(sessionId);
   const [questions, setQuestions] = useState<Question[]>([]);
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState<number>(0);
+  const [submissions, setSubmissions] = useState<Record<string, any>>({});
 
   useEffect(() => {
     const fetchQuestions = async () => {
@@ -26,15 +32,42 @@ export const TeacherSession = () => {
     fetchQuestions();
   }, []);
 
-  const handleNextQuestion = () => {
-    if (currentQuestionIndex < questions.length - 1) {
+  // Poll for submissions every few seconds
+  useEffect(() => {
+    if (!sessionId) return;
+
+    const pollSubmissions = async () => {
+      try {
+        const data = await getSubmissions(sessionId);
+        setSubmissions(data.submissions);
+      } catch (error) {
+        console.error("Error fetching submissions:", error);
+      }
+    };
+
+    const interval = setInterval(pollSubmissions, 3000);
+    return () => clearInterval(interval);
+  }, [sessionId]);
+
+  const handleNextQuestion = async () => {
+    if (!sessionId || currentQuestionIndex >= questions.length - 1) return;
+
+    try {
+      await setCurrentQuestion(sessionId, currentQuestionIndex + 1);
       setCurrentQuestionIndex(currentQuestionIndex + 1);
+    } catch (error) {
+      console.error("Error setting next question:", error);
     }
   };
 
-  const handlePreviousQuestion = () => {
-    if (currentQuestionIndex > 0) {
+  const handlePreviousQuestion = async () => {
+    if (!sessionId || currentQuestionIndex <= 0) return;
+
+    try {
+      await setCurrentQuestion(sessionId, currentQuestionIndex - 1);
       setCurrentQuestionIndex(currentQuestionIndex - 1);
+    } catch (error) {
+      console.error("Error setting previous question:", error);
     }
   };
 
@@ -69,6 +102,19 @@ export const TeacherSession = () => {
           >
             next
           </BlueButton>
+        </Box>
+
+        {/* Display submissions */}
+        <Box mt={8}>
+          <Heading size="md" mb={4}>
+            Submissions
+          </Heading>
+          {Object.entries(submissions).map(([studentId, submission]) => (
+            <Box key={studentId} p={4} bg="gray.50" mb={2} borderRadius="md">
+              <Text fontWeight="bold">Student {studentId}</Text>
+              <Text mt={2}>{submission.text}</Text>
+            </Box>
+          ))}
         </Box>
       </VStack>
     </Box>
