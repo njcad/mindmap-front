@@ -35,7 +35,7 @@ export function Home() {
             mind mapping experiences
           </Text>
         </Box>
-
+        {userId !== null ?
         <HStack mt="10px" align="flex-start">
           <Box
             transform="translateY(0)"
@@ -67,6 +67,9 @@ export function Home() {
               join a session
             </OutlineButton>
           </Box>
+        </HStack> : <HStack mt="10px" justify="center" spaceX="20px">
+          <LoginWidget isSignUp={false} updateUserId={updateUserId} />
+          <LoginWidget isSignUp={true} updateUserId={updateUserId} />
         </HStack>
         }
       </Box>
