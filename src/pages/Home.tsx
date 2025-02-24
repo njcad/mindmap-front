@@ -15,6 +15,11 @@ export function Home() {
     navigate("/join-session");
   };
 
+  const logout = () => {
+    localStorage.removeItem('user_id');
+    updateUserId(null)
+  }
+
   // Defaults to null if the item does not exist
   const [userId, updateUserId] = useState(localStorage.getItem('user_id'));
 
@@ -67,6 +72,15 @@ export function Home() {
               fontSize="xl"
             >
               join a session
+            </OutlineButton>
+            <OutlineButton
+              onClick={logout}
+              size="lg"
+              px="8"
+              py="6"
+              fontSize="xl"
+            >
+              Log Out
             </OutlineButton>
           </Box>
         </HStack> : <HStack mt="10px" justify="center" spaceX="20px">
