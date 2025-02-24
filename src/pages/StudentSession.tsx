@@ -48,7 +48,8 @@ export const StudentSession = () => {
     try {
       await submitAnswer(
         sessionId,
-        "student-1", // TODO: Replace with actual student ID
+        // "student-1", // TODO: Replace with actual student ID
+        `student-${Math.floor(Math.random() * 1000)}`,
         answer.trim(),
         currentQuestion.questionIndex
       );

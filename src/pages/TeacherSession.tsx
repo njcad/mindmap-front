@@ -105,12 +105,19 @@ export const TeacherSession = () => {
         </Box>
 
         {/* Display submissions */}
-        <Box mt={8}>
+        <Box mt={8} flex={1} maxH="calc(60vh - 80px)" overflowY="auto">
           <Heading size="md" mb={4}>
             Submissions
           </Heading>
           {Object.entries(submissions).map(([studentId, submission]) => (
-            <Box key={studentId} p={4} bg="gray.50" mb={2} borderRadius="md">
+            <Box
+              key={studentId}
+              p={4}
+              bg="gray.100"
+              _dark={{ bg: "gray.700" }}
+              mb={2}
+              borderRadius="md"
+            >
               <Text fontWeight="bold">Student {studentId}</Text>
               <Text mt={2}>{submission.text}</Text>
             </Box>
