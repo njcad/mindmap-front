@@ -15,6 +15,7 @@ export const signup = async (username: string, password: string, isTeacher: bool
       throw new Error('Incorrect login');
     }
     const data = await response.json()
+    localStorage.setItem('user_id', data.user_id)
     return data.user_id;
   } catch (error) {
     throw error;
@@ -34,6 +35,7 @@ export const login = async (username: string, password: string): Promise<string>
       throw new Error('Incorrect login');
     }
     const data = await response.json();
+    localStorage.setItem('user_id', data.user_id)
     return data.user_id;
   } catch (error) {
     throw error;

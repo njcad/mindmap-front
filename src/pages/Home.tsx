@@ -14,7 +14,9 @@ export function Home() {
   const handleJoinSession = () => {
     navigate("/join-session");
   };
-  const [userId, updateUserId] = useState(null);
+
+  // Defaults to null if the item does not exist
+  const [userId, updateUserId] = useState(localStorage.getItem('user_id'));
 
 
   return (
