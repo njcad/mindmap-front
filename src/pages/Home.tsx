@@ -20,22 +20,57 @@ export function Home() {
   return (
     <>
       <BackgroundAnimation />
-      <Box py="240px" textAlign="center" letterSpacing="tight">
-        <Heading fontSize="8xl">MindMap</Heading>
-        <Text mt="50px" fontSize="2xl" color="gray.400">
-          the classroom tool to facilitate next-level discussion
-        </Text>
-        {userId !== null ? <HStack mt="10px" justify="center" spaceX="20px">
-          <BlueButton onClick={handleStartSession}>start a session</BlueButton>
-          <OutlineButton onClick={handleJoinSession}>
-            join a session
-          </OutlineButton>
-        </HStack> : 
-        <HStack mt="10px" justify="center" spaceX="20px">
+      <Box py="240px" pl="120px" letterSpacing="tight" overflow="hidden">
+        <Box>
+          <Heading fontSize={["6xl", "8xl"]} fontWeight="extrabold">
+            MindMap
+          </Heading>
+          <Text
+            mt="50px"
+            fontSize={["xl", "2xl"]}
+            color="gray.400"
+            maxW="600px"
+          >
+            Transform your classroom discussions into engaging, collaborative
+            mind mapping experiences
+          </Text>
+        </Box>
+        {userId !== null ?
+        <HStack mt="10px" align="flex-start">
+          <Box
+            transform="translateY(0)"
+            transition="transform 0.3s"
+            _hover={{ transform: "translateY(-5px)" }}
+          >
+            <BlueButton
+              onClick={handleStartSession}
+              size="lg"
+              px="8"
+              py="6"
+              fontSize="xl"
+            >
+              start a session
+            </BlueButton>
+          </Box>
+          <Box
+            transform="translateY(0)"
+            transition="transform 0.3s"
+            _hover={{ transform: "translateY(-5px)" }}
+          >
+            <OutlineButton
+              onClick={handleJoinSession}
+              size="lg"
+              px="8"
+              py="6"
+              fontSize="xl"
+            >
+              join a session
+            </OutlineButton>
+          </Box>
+        </HStack> : <HStack mt="10px" justify="center" spaceX="20px">
           <LoginWidget isSignUp={false} updateUserId={updateUserId} />
           <LoginWidget isSignUp={true} updateUserId={updateUserId} />
-        </HStack>
-        }
+        </HStack>}
       </Box>
     </>
   );
