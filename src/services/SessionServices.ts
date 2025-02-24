@@ -35,8 +35,24 @@ export const login = async (username: string, password: string): Promise<string>
       throw new Error('Incorrect login');
     }
     const data = await response.json();
-    localStorage.setItem('user_id', data.user_id)
+    localStorage.setItem('user_id', data.user_id);
     return data.user_id;
+  } catch (error) {
+    throw error;
+  }
+}
+
+export const getSession = async (): Promise<string> => {
+  try {
+    const response = await fetch('http://localhost:5000/api/make_session', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({user_id: localStorage.getItem('user_id')}),
+      });
+    const data = await response.json();
+    return data.session_id;
   } catch (error) {
     throw error;
   }
@@ -58,15 +74,15 @@ export const getQuestions = async (): Promise<Question[]> => {
   }
 };
 
-export const saveQuestions = async (questions: Question[]): Promise<void> => {
+export const saveQuestions = async (questions: Question[], sessionID: string): Promise<string[]> => {
+  const question_array = questions.map((q) => {return {"question_text": q, "session_id": sessionID}})
   try {
-    // const response = await fetch('http://127.0.0.1:5000/api/questions', {
-      const response = await fetch('http://localhost:5000/api/questions', {
+      const response = await fetch('http://localhost:5000/api/save_questions', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify(questions),
+      body: JSON.stringify(question_array),
     });
 
     if (!response.ok) {
@@ -74,7 +90,8 @@ export const saveQuestions = async (questions: Question[]): Promise<void> => {
     }
 
     const data = await response.json();
-    console.log(data.message); // Log success message
+    console.log(`uploaded ${data.count} questions`)
+    return data.questions;
   } catch (error) {
     console.error('Error saving questions:', error);
     throw error;
