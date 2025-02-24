@@ -3,6 +3,8 @@ import { Box, Heading, HStack, Text } from "@chakra-ui/react";
 import { BlueButton } from "../components/application/BlueButton";
 import { OutlineButton } from "../components/application/OutlineButton";
 import { BackgroundAnimation } from "../components/application/BackgroundAnimation";
+import { useState } from "react";
+import LoginWidget from "../components/login";
 
 export function Home() {
   const navigate = useNavigate();
@@ -12,6 +14,8 @@ export function Home() {
   const handleJoinSession = () => {
     navigate("/join-session");
   };
+  const [userId, updateUserId] = useState(null);
+
 
   return (
     <>
@@ -64,6 +68,7 @@ export function Home() {
             </OutlineButton>
           </Box>
         </HStack>
+        }
       </Box>
     </>
   );

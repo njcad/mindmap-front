@@ -2,6 +2,44 @@ interface Question {
   text: string;
 }
 
+export const signup = async (username: string, password: string, isTeacher: boolean): Promise<string> => {
+  try {
+    const response = await fetch('http://localhost:5000/api/signup', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({username: username, password: password, isTeacher: isTeacher}),
+    });
+    if (!response.ok) {
+      throw new Error('Incorrect login');
+    }
+    const data = await response.json()
+    return data.user_id;
+  } catch (error) {
+    throw error;
+  }
+}
+
+export const login = async (username: string, password: string): Promise<string> => {
+  try {
+    const response = await fetch('http://localhost:5000/api/login', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({username: username, password: password}),
+    });
+    if (!response.ok) {
+      throw new Error('Incorrect login');
+    }
+    const data = await response.json();
+    return data.user_id;
+  } catch (error) {
+    throw error;
+  }
+}
+
 export const getQuestions = async (): Promise<Question[]> => {
   try {
     const response = await fetch('http://127.0.0.1:5000/api/questions', {
@@ -20,7 +58,8 @@ export const getQuestions = async (): Promise<Question[]> => {
 
 export const saveQuestions = async (questions: Question[]): Promise<void> => {
   try {
-    const response = await fetch('http://127.0.0.1:5000/api/questions', {
+    // const response = await fetch('http://127.0.0.1:5000/api/questions', {
+      const response = await fetch('http://localhost:5000/api/questions', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
