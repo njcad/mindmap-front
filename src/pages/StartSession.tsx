@@ -11,6 +11,7 @@ import {
 } from "../services/SessionServices";
 
 interface Question {
+  id: string
   text: string;
 }
 
@@ -81,7 +82,7 @@ export const StartSession = () => {
 
   const handleAddQuestion = () => {
     if (newQuestion.trim()) {
-      setQuestions([...questions, { text: newQuestion.trim() }]);
+      setQuestions([...questions, { text: newQuestion.trim(), id: 'null' }]);
       setNewQuestion("");
     }
   };

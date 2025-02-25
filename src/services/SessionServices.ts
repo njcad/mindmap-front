@@ -1,4 +1,5 @@
 interface Question {
+  id: string;
   text: string;
 }
 
@@ -58,16 +59,18 @@ export const getSession = async (): Promise<string> => {
   }
 }
 
-export const getQuestions = async (): Promise<Question[]> => {
+export const getQuestions = async (session_id: string): Promise<Question[]> => {
   try {
-    const response = await fetch('http://127.0.0.1:5000/api/questions', {
-        method: "GET",
+    const response = await fetch('http://127.0.0.1:5000/api/get_questions', {
+        method: "POST",
+        body: JSON.stringify({"session_id": session_id})
     });
     if (!response.ok) {
       throw new Error('Failed to fetch questions');
     }
     const data = await response.json();
-    return data.questions;
+    const qs = data.map((q: any) => {return {"id": q.question_id, "text": q.text}});
+    return qs;
   } catch (error) {
     console.error('Error fetching questions:', error);
     throw error;

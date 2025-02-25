@@ -10,6 +10,7 @@ import { BlueButton } from "../components/application/BlueButton";
 import { OutlineButton } from "../components/application/OutlineButton";
 
 interface Question {
+  id: string;
   text: string;
 }
 
@@ -23,7 +24,8 @@ export const TeacherSession = () => {
   useEffect(() => {
     const fetchQuestions = async () => {
       try {
-        const fetchedQuestions = await getQuestions();
+        const id = sessionId ? sessionId : "";
+        const fetchedQuestions = await getQuestions(id);
         setQuestions(fetchedQuestions);
       } catch (error) {
         console.error("Error fetching questions:", error);
