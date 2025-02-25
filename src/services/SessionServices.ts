@@ -69,7 +69,7 @@ export const getQuestions = async (session_id: string): Promise<Question[]> => {
       throw new Error('Failed to fetch questions');
     }
     const data = await response.json();
-    const qs = data.map((q: any) => {return {"id": q.question_id, "text": q.text}});
+    const qs = data.questions.map((q: any) => {return {"id": q.question_id, "text": q.text}});
     return qs;
   } catch (error) {
     console.error('Error fetching questions:', error);
@@ -78,7 +78,7 @@ export const getQuestions = async (session_id: string): Promise<Question[]> => {
 };
 
 export const saveQuestions = async (questions: Question[], sessionID: string): Promise<string[]> => {
-  const question_array = questions.map((q) => {return {"question_text": q, "session_id": sessionID}})
+  const question_array = questions.map((q) => {return {"question_text": q.text, "session_id": sessionID}})
   try {
       const response = await fetch('http://localhost:5000/api/save_questions', {
       method: 'POST',
@@ -94,7 +94,8 @@ export const saveQuestions = async (questions: Question[], sessionID: string): P
 
     const data = await response.json();
     console.log(`uploaded ${data.count} questions`)
-    return data.questions;
+    const qs = data.questions.map((q: any) => {return {"id": q.question_id, "text": q.text}});
+    return qs;
   } catch (error) {
     console.error('Error saving questions:', error);
     throw error;
