@@ -63,6 +63,9 @@ export const getQuestions = async (session_id: string): Promise<Question[]> => {
   try {
     const response = await fetch('http://127.0.0.1:5000/api/get_questions', {
         method: "POST",
+        headers: {
+          'Content-Type': 'application/json',
+        },
         body: JSON.stringify({"session_id": session_id})
     });
     if (!response.ok) {
@@ -152,7 +155,13 @@ export const submitAnswer = async (sessionId: string, studentId: string, submiss
 };
 
 export const getSubmissions = async (sessionId: string) => {
-  const response = await fetch(`http://127.0.0.1:5000/api/session/${sessionId}/submissions`);
+  const response = await fetch(`http://127.0.0.1:5000/api/get_submissions`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({'id': sessionId})
+  });
   if (!response.ok) throw new Error('Failed to get submissions');
-  return response.json();
+  const data = await response.json();
+  const responses = data.map((r: any) => {return {'text': r.text, 'id': r.response_id}})
+  return responses;
 };

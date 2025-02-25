@@ -16,7 +16,6 @@ interface Question {
 
 export const TeacherSession = () => {
   const { sessionId } = useParams();
-  console.log(sessionId);
   const [questions, setQuestions] = useState<Question[]>([]);
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState<number>(0);
   const [submissions, setSubmissions] = useState<Record<string, any>>({});
@@ -40,37 +39,39 @@ export const TeacherSession = () => {
 
     const pollSubmissions = async () => {
       try {
-        const data = await getSubmissions(sessionId);
-        setSubmissions(data.submissions);
+        const responses = await getSubmissions(questions[currentQuestionIndex].id);
+        setSubmissions(responses);
       } catch (error) {
         console.error("Error fetching submissions:", error);
       }
     };
 
-    const interval = setInterval(pollSubmissions, 3000);
+    const interval = setInterval(pollSubmissions, 5000);
     return () => clearInterval(interval);
-  }, [sessionId]);
+  }, [sessionId, currentQuestionIndex]);
 
   const handleNextQuestion = async () => {
     if (!sessionId || currentQuestionIndex >= questions.length - 1) return;
+    setCurrentQuestionIndex(currentQuestionIndex + 1);
 
-    try {
-      await setCurrentQuestion(sessionId, currentQuestionIndex + 1);
-      setCurrentQuestionIndex(currentQuestionIndex + 1);
-    } catch (error) {
-      console.error("Error setting next question:", error);
-    }
+    // try {
+    //   await setCurrentQuestion(sessionId, currentQuestionIndex + 1);
+    //   setCurrentQuestionIndex(currentQuestionIndex + 1);
+    // } catch (error) {
+    //   console.error("Error setting next question:", error);
+    // }
   };
 
   const handlePreviousQuestion = async () => {
     if (!sessionId || currentQuestionIndex <= 0) return;
+    setCurrentQuestionIndex(currentQuestionIndex - 1);
 
-    try {
-      await setCurrentQuestion(sessionId, currentQuestionIndex - 1);
-      setCurrentQuestionIndex(currentQuestionIndex - 1);
-    } catch (error) {
-      console.error("Error setting previous question:", error);
-    }
+    // try {
+    //   await setCurrentQuestion(sessionId, currentQuestionIndex - 1);
+    //   setCurrentQuestionIndex(currentQuestionIndex - 1);
+    // } catch (error) {
+    //   console.error("Error setting previous question:", error);
+    // }
   };
 
   return (
