@@ -128,20 +128,25 @@ export const uploadQuestionsFile = async (file: File): Promise<Question[]> => {
     }
   };
 
-export const setCurrentQuestion = async (sessionId: string, questionIndex: number) => {
-  const response = await fetch(`http://127.0.0.1:5000/api/session/${sessionId}/set-question`, {
+export const setCurrentQuestion = async (sessionId: string, questionId: string) => {
+  const response = await fetch(`http://127.0.0.1:5000/api/set-question`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ questionIndex })
+    body: JSON.stringify({ 'session_id': sessionId, 'question_id': questionId })
   });
   if (!response.ok) throw new Error('Failed to set question');
   return response.json();
 };
 
 export const getCurrentQuestion = async (sessionId: string) => {
-  const response = await fetch(`http://127.0.0.1:5000/api/session/${sessionId}/current-question`);
+  const response = await fetch(`http://127.0.0.1:5000/api/current-question`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ 'session_id': sessionId })
+  });
   if (!response.ok) throw new Error('Failed to get current question');
-  return response.json();
+  const data = await response.json();
+  return data.question;
 };
 
 export const submitAnswer = async (sessionId: string, studentId: string, submission: string, questionIndex: number) => {

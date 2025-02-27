@@ -26,6 +26,7 @@ export const TeacherSession = () => {
         const id = sessionId ? sessionId : "";
         const fetchedQuestions = await getQuestions(id);
         setQuestions(fetchedQuestions);
+        setCurrentQuestion(id, questions[currentQuestionIndex].id)
       } catch (error) {
         console.error("Error fetching questions:", error);
       }
@@ -53,25 +54,21 @@ export const TeacherSession = () => {
   const handleNextQuestion = async () => {
     if (!sessionId || currentQuestionIndex >= questions.length - 1) return;
     setCurrentQuestionIndex(currentQuestionIndex + 1);
-
-    // try {
-    //   await setCurrentQuestion(sessionId, currentQuestionIndex + 1);
-    //   setCurrentQuestionIndex(currentQuestionIndex + 1);
-    // } catch (error) {
-    //   console.error("Error setting next question:", error);
-    // }
+    try {
+      setCurrentQuestion(sessionId, questions[currentQuestionIndex].id);
+    } catch (error) {
+      console.error(error)
+    }
   };
 
   const handlePreviousQuestion = async () => {
     if (!sessionId || currentQuestionIndex <= 0) return;
     setCurrentQuestionIndex(currentQuestionIndex - 1);
-
-    // try {
-    //   await setCurrentQuestion(sessionId, currentQuestionIndex - 1);
-    //   setCurrentQuestionIndex(currentQuestionIndex - 1);
-    // } catch (error) {
-    //   console.error("Error setting previous question:", error);
-    // }
+    try {
+      setCurrentQuestion(sessionId, questions[currentQuestionIndex].id);
+    } catch (error) {
+      console.error(error)
+    }
   };
 
   return (

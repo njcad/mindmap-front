@@ -11,7 +11,6 @@ interface Question {
 
 export const StudentSession = () => {
   const { sessionId } = useParams();
-  console.log(sessionId);
   const [currentQuestion, setCurrentQuestion] = useState<Question | null>(null);
   const [answer, setAnswer] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
