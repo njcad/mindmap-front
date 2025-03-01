@@ -45,14 +45,15 @@ export const StudentSession = () => {
 
     setIsSubmitting(true);
     try {
-      await submitAnswer(
-        sessionId,
-        // "student-1", // TODO: Replace with actual student ID
-        `student-${Math.floor(Math.random() * 1000)}`,
-        answer.trim(),
-        currentQuestion.questionIndex
-      );
-      setAnswer(""); // Clear answer after submission
+      const userId = localStorage.getItem('user_id');
+      if (userId) {
+        await submitAnswer(
+          sessionId,
+          userId,
+          answer.trim(),
+        );
+        setAnswer(""); // Clear answer after submission
+      }
     } catch (error) {
       console.error("Error submitting answer:", error);
     } finally {

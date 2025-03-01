@@ -72,7 +72,7 @@ export const getQuestions = async (session_id: string): Promise<Question[]> => {
       throw new Error('Failed to fetch questions');
     }
     const data = await response.json();
-    const qs = data.questions.map((q: any) => {return {"id": q.question_id, "text": q.text}});
+    const qs = data.questions.map((q: any) => {return {"id": q.question_id, "text": q.question_text}});
     return qs;
   } catch (error) {
     console.error('Error fetching questions:', error);
@@ -129,17 +129,22 @@ export const uploadQuestionsFile = async (file: File): Promise<Question[]> => {
   };
 
 export const setCurrentQuestion = async (sessionId: string, questionId: string) => {
-  const response = await fetch(`http://127.0.0.1:5000/api/set-question`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ 'session_id': sessionId, 'question_id': questionId })
-  });
-  if (!response.ok) throw new Error('Failed to set question');
-  return response.json();
+  try {
+    const response = await fetch(`http://127.0.0.1:5000/api/set_question`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ 'session_id': sessionId, 'question_id': questionId })
+    });
+    const data = await response.json();
+    return data.session;
+  } catch (error) {
+    console.error('Failed to set question', error);
+    throw error;
+  }
 };
 
 export const getCurrentQuestion = async (sessionId: string) => {
-  const response = await fetch(`http://127.0.0.1:5000/api/current-question`, {
+  const response = await fetch(`http://127.0.0.1:5000/api/current_question`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ 'session_id': sessionId })
@@ -149,24 +154,30 @@ export const getCurrentQuestion = async (sessionId: string) => {
   return data.question;
 };
 
-export const submitAnswer = async (sessionId: string, studentId: string, submission: string, questionIndex: number) => {
-  const response = await fetch(`http://127.0.0.1:5000/api/session/${sessionId}/submit`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ studentId, submission, questionIndex })
-  });
-  if (!response.ok) throw new Error('Failed to submit answer');
-  return response.json();
+export const submitAnswer = async (sessionId: string, studentId: string, submission: string) => {
+  try {
+    const response = await fetch(`http://127.0.0.1:5000/api/submit`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ 'session_id': sessionId, 'user_id': studentId, 'text': submission})
+    });
+    const data = await response.json();
+    return data;
+  } catch (e) {
+    throw e;
+  }
 };
 
-export const getSubmissions = async (sessionId: string) => {
-  const response = await fetch(`http://127.0.0.1:5000/api/get_submissions`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({'id': sessionId})
-  });
-  if (!response.ok) throw new Error('Failed to get submissions');
-  const data = await response.json();
-  const responses = data.map((r: any) => {return {'text': r.text, 'id': r.response_id}})
-  return responses;
+export const getSubmissions = async (questionId: string) => {
+  try {
+    const response = await fetch(`http://127.0.0.1:5000/api/get_submissions`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({'question_id': questionId})
+    });
+    const responses = await response.json();
+    return responses;
+  } catch (e) {
+    throw e;
+  }
 };

@@ -26,7 +26,7 @@ export const TeacherSession = () => {
         const id = sessionId ? sessionId : "";
         const fetchedQuestions = await getQuestions(id);
         setQuestions(fetchedQuestions);
-        setCurrentQuestion(id, questions[currentQuestionIndex].id)
+        setCurrentQuestion(id, fetchedQuestions[currentQuestionIndex].id);
       } catch (error) {
         console.error("Error fetching questions:", error);
       }
@@ -40,8 +40,10 @@ export const TeacherSession = () => {
 
     const pollSubmissions = async () => {
       try {
-        const responses = await getSubmissions(questions[currentQuestionIndex].id);
-        setSubmissions(responses);
+        if (questions.length > 0) {
+          const responses = await getSubmissions(questions[currentQuestionIndex].id);
+          setSubmissions(responses);
+        }
       } catch (error) {
         console.error("Error fetching submissions:", error);
       }
@@ -49,13 +51,13 @@ export const TeacherSession = () => {
 
     const interval = setInterval(pollSubmissions, 5000);
     return () => clearInterval(interval);
-  }, [sessionId, currentQuestionIndex]);
+  }, [sessionId, currentQuestionIndex, questions]);
 
   const handleNextQuestion = async () => {
     if (!sessionId || currentQuestionIndex >= questions.length - 1) return;
     setCurrentQuestionIndex(currentQuestionIndex + 1);
     try {
-      setCurrentQuestion(sessionId, questions[currentQuestionIndex].id);
+      setCurrentQuestion(sessionId, questions[currentQuestionIndex + 1].id);
     } catch (error) {
       console.error(error)
     }
@@ -65,7 +67,7 @@ export const TeacherSession = () => {
     if (!sessionId || currentQuestionIndex <= 0) return;
     setCurrentQuestionIndex(currentQuestionIndex - 1);
     try {
-      setCurrentQuestion(sessionId, questions[currentQuestionIndex].id);
+      setCurrentQuestion(sessionId, questions[currentQuestionIndex - 1].id);
     } catch (error) {
       console.error(error)
     }
@@ -119,7 +121,7 @@ export const TeacherSession = () => {
               borderRadius="md"
             >
               <Text fontWeight="bold">Student {studentId}</Text>
-              <Text mt={2}>{submission.text}</Text>
+              <Text mt={2}>{submission}</Text>
             </Box>
           ))}
         </Box>
