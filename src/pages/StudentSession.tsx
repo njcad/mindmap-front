@@ -3,12 +3,9 @@ import { Box, Heading, VStack, Textarea, Text } from "@chakra-ui/react";
 import { useParams } from "react-router-dom";
 import { getCurrentQuestion, submitAnswer } from "../services/SessionServices";
 import { BlueButton } from "../components/application/BlueButton";
+import { Question } from "../assets/interfaces";
 
-interface Question {
-  text: string;
-  questionIndex: number;
-}
-
+// Students interact with a session by submitting responses and seeing their assigned groups
 export const StudentSession = () => {
   const { sessionId } = useParams();
   const [currentQuestion, setCurrentQuestion] = useState<Question | null>(null);

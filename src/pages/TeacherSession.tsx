@@ -8,11 +8,8 @@ import {
 } from "../services/SessionServices";
 import { BlueButton } from "../components/application/BlueButton";
 import { OutlineButton } from "../components/application/OutlineButton";
+import { Question } from "../assets/interfaces";
 
-interface Question {
-  id: string;
-  text: string;
-}
 
 export const TeacherSession = () => {
   const { sessionId } = useParams();

@@ -6,6 +6,7 @@ import { BackgroundAnimation } from "../components/application/BackgroundAnimati
 import { useState } from "react";
 import LoginWidget from "../components/login";
 
+// The default page on the app, handling log ins, sign ups, and creating sessions
 export function Home() {
   const navigate = useNavigate();
   const handleStartSession = () => {
@@ -16,6 +17,7 @@ export function Home() {
   };
 
   const logout = () => {
+    // Remove user ID from cache only when user forces a log out
     localStorage.removeItem('user_id');
     updateUserId(null)
   }
@@ -42,6 +44,7 @@ export function Home() {
             mind mapping experiences
           </Text>
         </Box>
+        {/* If not logged in, display login/signup components, otherwise enable session controls */}
         {userId !== null ?
         <HStack mt="10px" align="flex-start">
           <Box

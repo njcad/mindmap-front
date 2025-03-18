@@ -2,22 +2,21 @@ import { OutlineButton } from "../components/application/OutlineButton";
 import { BlueButton } from "../components/application/BlueButton";
 import { Box, Heading, Input, HStack, Button, Text } from "@chakra-ui/react";
 import { useToast } from "@chakra-ui/toast";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import {
   getSession,
   saveQuestions,
   uploadQuestionsFile,
 } from "../services/SessionServices";
+import { Question } from "../assets/interfaces";
 
-interface Question {
-  id: string
-  text: string;
-}
-
+// Teacher controls for adding questions to their session
 export const StartSession = () => {
   const navigate = useNavigate();
+  // If already building a session or revising a session, access the last saved instance of it
   const [sessionID, updateSessionId] = useState<string>(localStorage.getItem('session_id') || "");
+  // Use toast for alerts
   const toast = useToast();
   const [questions, setQuestions] = useState<Question[]>([]);
   const [newQuestion, setNewQuestion] = useState("");
@@ -72,7 +71,6 @@ export const StartSession = () => {
     try {
       setQuestions([]);
       const id = await getSession();
-      console.log(id);
       updateSessionId(id);
       localStorage.setItem('session_id', id);
     } catch (error) {
@@ -82,6 +80,7 @@ export const StartSession = () => {
 
   const handleAddQuestion = () => {
     if (newQuestion.trim()) {
+      // Insert a new question at the end of the array of existing questions, with an unset ID of 'null'
       setQuestions([...questions, { text: newQuestion.trim(), id: 'null' }]);
       setNewQuestion("");
     }

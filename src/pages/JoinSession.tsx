@@ -3,13 +3,13 @@ import { BlueButton } from "../components/application/BlueButton";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 
+// Allow students to type in a session ID then launch the app
 export const JoinSession = () => {
   const [sessionID, setSessionID] = useState("");
   const navigate = useNavigate();
 
   const handleSessionIDChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const newSessionID = e.target.value;
-    console.log("Session ID changed:", newSessionID);
     setSessionID(newSessionID);
   };
 
