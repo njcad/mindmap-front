@@ -33,6 +33,7 @@ const LoginWidget = (props: loginProps) => {
         console.log('logged in user: ' + user_id)
         updateUserId(user_id)
     } catch (error) {
+        setError('Your password must be at least six characters long')
         throw error;
     }
 
@@ -81,7 +82,6 @@ const LoginWidget = (props: loginProps) => {
             type="checkbox"
             checked={isTeacher}
             onChange={handleIsTeacherChange}
-            required
           />
         </div> : <></>}
         <button type="submit">{buttonText}</button>

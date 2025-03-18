@@ -10,12 +10,12 @@ import { BlueButton } from "../components/application/BlueButton";
 import { OutlineButton } from "../components/application/OutlineButton";
 
 interface Question {
+  id: string;
   text: string;
 }
 
 export const TeacherSession = () => {
   const { sessionId } = useParams();
-  console.log(sessionId);
   const [questions, setQuestions] = useState<Question[]>([]);
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState<number>(0);
   const [submissions, setSubmissions] = useState<Record<string, any>>({});
@@ -23,8 +23,10 @@ export const TeacherSession = () => {
   useEffect(() => {
     const fetchQuestions = async () => {
       try {
-        const fetchedQuestions = await getQuestions();
+        const id = sessionId ? sessionId : "";
+        const fetchedQuestions = await getQuestions(id);
         setQuestions(fetchedQuestions);
+        setCurrentQuestion(id, fetchedQuestions[currentQuestionIndex].id);
       } catch (error) {
         console.error("Error fetching questions:", error);
       }
@@ -38,36 +40,36 @@ export const TeacherSession = () => {
 
     const pollSubmissions = async () => {
       try {
-        const data = await getSubmissions(sessionId);
-        setSubmissions(data.submissions);
+        if (questions.length > 0) {
+          const responses = await getSubmissions(questions[currentQuestionIndex].id);
+          setSubmissions(responses);
+        }
       } catch (error) {
         console.error("Error fetching submissions:", error);
       }
     };
 
-    const interval = setInterval(pollSubmissions, 3000);
+    const interval = setInterval(pollSubmissions, 5000);
     return () => clearInterval(interval);
-  }, [sessionId]);
+  }, [sessionId, currentQuestionIndex, questions]);
 
   const handleNextQuestion = async () => {
     if (!sessionId || currentQuestionIndex >= questions.length - 1) return;
-
+    setCurrentQuestionIndex(currentQuestionIndex + 1);
     try {
-      await setCurrentQuestion(sessionId, currentQuestionIndex + 1);
-      setCurrentQuestionIndex(currentQuestionIndex + 1);
+      setCurrentQuestion(sessionId, questions[currentQuestionIndex + 1].id);
     } catch (error) {
-      console.error("Error setting next question:", error);
+      console.error(error)
     }
   };
 
   const handlePreviousQuestion = async () => {
     if (!sessionId || currentQuestionIndex <= 0) return;
-
+    setCurrentQuestionIndex(currentQuestionIndex - 1);
     try {
-      await setCurrentQuestion(sessionId, currentQuestionIndex - 1);
-      setCurrentQuestionIndex(currentQuestionIndex - 1);
+      setCurrentQuestion(sessionId, questions[currentQuestionIndex - 1].id);
     } catch (error) {
-      console.error("Error setting previous question:", error);
+      console.error(error)
     }
   };
 
@@ -119,7 +121,7 @@ export const TeacherSession = () => {
               borderRadius="md"
             >
               <Text fontWeight="bold">Student {studentId}</Text>
-              <Text mt={2}>{submission.text}</Text>
+              <Text mt={2}>{submission}</Text>
             </Box>
           ))}
         </Box>

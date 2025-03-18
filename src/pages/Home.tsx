@@ -14,7 +14,14 @@ export function Home() {
   const handleJoinSession = () => {
     navigate("/join-session");
   };
-  const [userId, updateUserId] = useState(null);
+
+  const logout = () => {
+    localStorage.removeItem('user_id');
+    updateUserId(null)
+  }
+
+  // Defaults to null if the item does not exist
+  const [userId, updateUserId] = useState(localStorage.getItem('user_id'));
 
 
   return (
@@ -65,6 +72,15 @@ export function Home() {
               fontSize="xl"
             >
               join a session
+            </OutlineButton>
+            <OutlineButton
+              onClick={logout}
+              size="lg"
+              px="8"
+              py="6"
+              fontSize="xl"
+            >
+              Log Out
             </OutlineButton>
           </Box>
         </HStack> : <HStack mt="10px" justify="center" spaceX="20px">

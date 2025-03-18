@@ -2,20 +2,22 @@ import { OutlineButton } from "../components/application/OutlineButton";
 import { BlueButton } from "../components/application/BlueButton";
 import { Box, Heading, Input, HStack, Button, Text } from "@chakra-ui/react";
 import { useToast } from "@chakra-ui/toast";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import {
+  getSession,
   saveQuestions,
   uploadQuestionsFile,
 } from "../services/SessionServices";
 
 interface Question {
+  id: string
   text: string;
 }
 
 export const StartSession = () => {
   const navigate = useNavigate();
-  const sessionID = "awesome-tiger";
+  const [sessionID, updateSessionId] = useState<string>(localStorage.getItem('session_id') || "");
   const toast = useToast();
   const [questions, setQuestions] = useState<Question[]>([]);
   const [newQuestion, setNewQuestion] = useState("");
@@ -57,7 +59,7 @@ export const StartSession = () => {
     try {
       console.log(questions);
       // Save the questions to the backend
-      await saveQuestions(questions);
+      await saveQuestions(questions, sessionID);
 
       // Navigate to the teacher's session view
       navigate(`/session/${sessionID}/teacher`);
@@ -66,9 +68,21 @@ export const StartSession = () => {
     }
   };
 
+  const handleReset = async () => {
+    try {
+      setQuestions([]);
+      const id = await getSession();
+      console.log(id);
+      updateSessionId(id);
+      localStorage.setItem('session_id', id);
+    } catch (error) {
+      throw error;
+    }
+  }
+
   const handleAddQuestion = () => {
     if (newQuestion.trim()) {
-      setQuestions([...questions, { text: newQuestion.trim() }]);
+      setQuestions([...questions, { text: newQuestion.trim(), id: 'null' }]);
       setNewQuestion("");
     }
   };
@@ -103,9 +117,10 @@ export const StartSession = () => {
       <Box flex={1} position="sticky" top={40}>
         <Heading color="gray.400">Session ID</Heading>
         <Heading fontSize="4xl" mt={3}>
-          awesome-tiger
+          {sessionID}
         </Heading>
         <OutlineButton onClick={handleLaunch}>Launch</OutlineButton>
+        <OutlineButton onClick={handleReset}>{!sessionID ? 'Start Session' : 'Reset'}</OutlineButton>
       </Box>
 
       <Box flex={1} maxH="calc(100vh - 80px)" overflowY="auto" px={2}>
